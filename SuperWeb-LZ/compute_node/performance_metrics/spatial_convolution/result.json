@@ -1,0 +1,128 @@
+{
+  "schema_version": 5,
+  "generated_at_unix": 1776386583.7034793,
+  "benchmark_elapsed_seconds": 143.04125600001134,
+  "device_overview": {
+    "system": "Windows",
+    "release": "10",
+    "machine": "AMD64",
+    "python_version": "3.10.5",
+    "cpu": {
+      "name": "Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz",
+      "logical_cpu_count": 8
+    },
+    "memory": {
+      "total_bytes": 8589934592,
+      "modules": [
+        {
+          "capacity_bytes": 8589934592,
+          "configured_clock_mhz": 2667,
+          "manufacturer": "SK Hynix",
+          "part_number": "HMAA1GS6CMR6N-VK"
+        }
+      ]
+    },
+    "gpus": [
+      {
+        "name": "OrayIddDriver Device",
+        "vendor": "Shanghai Best Oray Information Technology Co., Ltd.",
+        "pnp_device_id": "ROOT\\DISPLAY\\0000"
+      },
+      {
+        "name": "AMD Radeon (TM) 625",
+        "vendor": "Advanced Micro Devices, Inc.",
+        "pnp_device_id": "PCI\\VEN_1002&DEV_6900&SUBSYS_382F17AA&REV_D1\\4&31B84AD1&0&00E0"
+      },
+      {
+        "name": "Intel(R) UHD Graphics",
+        "vendor": "Intel Corporation",
+        "pnp_device_id": "PCI\\VEN_8086&DEV_9B41&SUBSYS_382F17AA&REV_02\\3&11583659&1&10"
+      }
+    ]
+  },
+  "methods": {
+    "spatial_convolution": {
+      "method": "spatial_convolution",
+      "display_name": "Spatial Convolution",
+      "generated_at_unix": 1776386575.8912065,
+      "benchmark_elapsed_seconds": 139.65095989999827,
+      "dataset": {
+        "root_dir": "compute_node/input_matrix/spatial_convolution/generated",
+        "artifacts": {
+          "autotune_input": "compute_node/input_matrix/spatial_convolution/generated/test_input.bin",
+          "autotune_weight": "compute_node/input_matrix/spatial_convolution/generated/test_weight.bin",
+          "measurement_input": "compute_node/input_matrix/spatial_convolution/generated/runtime_input.bin",
+          "measurement_weight": "compute_node/input_matrix/spatial_convolution/generated/runtime_weight.bin"
+        }
+      },
+      "workload": {
+        "autotune_plan": {
+          "name": "test-conv2d-256x256",
+          "h": 256,
+          "w": 256,
+          "c_in": 32,
+          "c_out": 64,
+          "k": 3,
+          "pad": 1,
+          "stride": 1,
+          "ideal_seconds": 0.5,
+          "zero_score_seconds": 5.0,
+          "autotune_repeats": 3
+        },
+        "measurement_plan": {
+          "name": "runtime-conv2d-2048x2048",
+          "h": 2048,
+          "w": 2048,
+          "c_in": 128,
+          "c_out": 256,
+          "k": 3,
+          "pad": 1,
+          "stride": 1,
+          "ideal_seconds": 60.0,
+          "zero_score_seconds": 600.0,
+          "measurement_repeats": 1,
+          "full_runtime_measurement": true
+        }
+      },
+      "backends_considered": [
+        "cpu"
+      ],
+      "detected_backends": [
+        "cpu"
+      ],
+      "usable_backends": [],
+      "ranking": [],
+      "best_backend": null,
+      "backends": {
+        "cpu": {
+          "backend": "cpu",
+          "available": false,
+          "device_name": "Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz",
+          "rank": null,
+          "autotune_plan": {
+            "autotune_repeats": 3,
+            "measurement_repeats": 1,
+            "trials_run": null,
+            "search_space": {
+              "workers": [
+                8,
+                4,
+                16,
+                2,
+                32
+              ]
+            }
+          },
+          "autotune_result": null,
+          "best_config": null,
+          "best_result": null,
+          "notes": [
+            "prebuilt runner",
+            "self-contained binary",
+            "CPU autotune failed: [WinError 2] \u7cfb\u7edf\u627e\u4e0d\u5230\u6307\u5b9a\u7684\u6587\u4ef6\u3002"
+          ]
+        }
+      }
+    }
+  }
+}

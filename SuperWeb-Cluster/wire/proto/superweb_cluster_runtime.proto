@@ -1,0 +1,326 @@
+syntax = "proto3";
+
+package superweb_cluster.runtime;
+
+enum MessageKind {
+  MESSAGE_KIND_UNSPECIFIED = 0;
+  REGISTER_WORKER = 1;
+  REGISTER_OK = 2;
+  HEARTBEAT = 3;
+  HEARTBEAT_OK = 4;
+  CLIENT_JOIN = 5;
+  CLIENT_REQUEST = 6;
+  CLIENT_RESPONSE = 7;
+  TASK_ASSIGN = 8;
+  TASK_ACCEPT = 9;
+  TASK_FAIL = 10;
+  TASK_RESULT = 11;
+  ARTIFACT_RELEASE = 12;
+  WORKER_UPDATE = 13;
+  CLIENT_INFO_REQUEST = 14;
+  CLIENT_INFO_REPLY = 15;
+  CLIENT_REQUEST_OK = 16;
+}
+
+message HardwareProfile {
+  string hostname = 1;
+  string local_ip = 2;
+  string mac_address = 3;
+  string system = 4;
+  string release = 5;
+  string machine = 6;
+  string processor = 7;
+  uint32 logical_cpu_count = 8;
+  uint64 memory_bytes = 9;
+}
+
+message RegisterWorker {
+  string node_name = 1;
+  HardwareProfile hardware = 2;
+  ComputePerformanceSummary performance = 3;
+}
+
+message ComputeHardwarePerformance {
+  string hardware_type = 1;
+  double effective_gflops = 2;
+  uint32 rank = 3;
+}
+
+message MethodPerformanceSummary {
+  string method = 1;
+  uint32 hardware_count = 2;
+  repeated ComputeHardwarePerformance ranked_hardware = 3;
+}
+
+message ComputePerformanceSummary {
+  uint32 hardware_count = 1;
+  repeated ComputeHardwarePerformance ranked_hardware = 2;
+  repeated MethodPerformanceSummary method_summaries = 3;
+}
+
+message RegisterOk {
+  string main_node_name = 1;
+  string main_node_ip = 2;
+  uint32 main_node_port = 3;
+  // Runtime id assigned by the main node, for example "worker-1".
+  string node_id = 4;
+}
+
+message Heartbeat {
+  string main_node_name = 1;
+  uint64 unix_time_ms = 2;
+}
+
+enum NodeStatus {
+  NODE_STATUS_UNKNOWN = 0;
+  NODE_STATUS_IDLE = 1;
+  NODE_STATUS_BUSY = 2;
+  NODE_STATUS_ERROR = 3;
+}
+
+enum TransferMode {
+  TRANSFER_MODE_UNSPECIFIED = 0;
+  INLINE_PREFERRED = 1;
+  ARTIFACT_PREFERRED = 2;
+  ARTIFACT_REQUIRED = 3;
+}
+
+message HeartbeatOk {
+  string node_name = 1;
+  uint64 heartbeat_unix_time_ms = 2;
+  uint64 received_unix_time_ms = 3;
+  repeated string active_task_ids = 4;
+  NodeStatus node_status = 5;
+  uint64 completed_task_count = 6;
+  string node_id = 7;
+}
+
+message ClientJoin {
+  string client_name = 1;
+}
+
+message ClientInfoRequest {
+  string client_id = 1;
+  string client_name = 2;
+  uint64 timestamp_ms = 3;
+}
+
+message ClientInfoReply {
+  string client_id = 1;
+  uint64 request_timestamp_ms = 2;
+  uint64 reply_timestamp_ms = 3;
+  uint64 timeout_ms = 4;
+  bool has_active_tasks = 5;
+  repeated string active_task_ids = 6;
+}
+
+message ArtifactDescriptor {
+  string artifact_id = 1;
+  string content_type = 2;
+  uint64 size_bytes = 3;
+  string checksum = 4;
+  string producer_node_id = 5;
+  string transfer_host = 6;
+  uint32 transfer_port = 7;
+  uint32 chunk_size = 8;
+  bool ready = 9;
+}
+
+message ClientRequest {
+  string request_id = 1;
+  string client_name = 2;
+  // Structured method name, such as gemv.
+  string method = 3;
+  string size = 10;
+  string object_id = 4;
+  string stream_id = 5;
+  uint64 timestamp_ms = 6;
+  // How many times the cluster should execute the same computation request.
+  uint32 iteration_count = 7;
+  oneof request_payload {
+    GemvRequestPayload gemv = 8;
+    Conv2dRequestPayload conv2d = 9;
+  }
+}
+
+message ClientRequestOk {
+  string client_id = 1;
+  string task_id = 2;
+  string method = 3;
+  string size = 6;
+  string object_id = 4;
+  uint64 accepted_timestamp_ms = 5;
+}
+
+message ClientResponse {
+  string request_id = 1;
+  string method = 2;
+  string size = 17;
+  string object_id = 3;
+  string stream_id = 4;
+  uint64 timestamp_ms = 5;
+  uint32 status_code = 6;
+  string error_message = 7;
+  uint32 worker_count = 8;
+  uint32 client_count = 9;
+  // Runtime id assigned by the main node, for example "client-1".
+  string client_id = 10;
+  // Echoes the iteration_count from the matching ClientRequest.
+  uint32 iteration_count = 11;
+  oneof response_payload {
+    GemvResponsePayload gemv = 12;
+    Conv2dResponsePayload conv2d = 13;
+  }
+  ArtifactDescriptor result_artifact = 14;
+  string task_id = 15;
+  uint64 elapsed_ms = 16;
+}
+
+message TaskAssign {
+  string request_id = 1;
+  // Runtime id of the compute node selected by the main node.
+  string node_id = 2;
+  string task_id = 3;
+  string method = 4;
+  string size = 12;
+  string object_id = 5;
+  string stream_id = 6;
+  uint64 timestamp_ms = 7;
+  // How many times the assigned processor slice should execute this math.
+  uint32 iteration_count = 8;
+  oneof task_payload {
+    GemvTaskPayload gemv = 9;
+    Conv2dTaskPayload conv2d = 10;
+  }
+  TransferMode transfer_mode = 11;
+  string artifact_id = 13;
+  uint64 artifact_timeout_ms = 14;
+}
+
+message TaskAccept {
+  string request_id = 1;
+  string node_id = 2;
+  string task_id = 3;
+  uint64 timestamp_ms = 4;
+  uint32 status_code = 5;
+}
+
+message TaskFail {
+  string request_id = 1;
+  string node_id = 2;
+  string task_id = 3;
+  uint64 timestamp_ms = 4;
+  uint32 status_code = 5;
+  string error_message = 6;
+}
+
+message TaskResult {
+  string request_id = 1;
+  string node_id = 2;
+  string task_id = 3;
+  uint64 timestamp_ms = 4;
+  uint32 status_code = 5;
+  // Echoes the iteration_count from the matching TaskAssign.
+  uint32 iteration_count = 6;
+  oneof result_payload {
+    GemvResultPayload gemv = 7;
+    Conv2dResultPayload conv2d = 8;
+  }
+  ArtifactDescriptor result_artifact = 9;
+}
+
+message ArtifactRelease {
+  string node_id = 1;
+  string task_id = 2;
+  string artifact_id = 4;
+  uint64 timestamp_ms = 5;
+}
+
+message WorkerUpdate {
+  string node_id = 1;
+  uint64 timestamp_ms = 2;
+  ComputePerformanceSummary performance = 3;
+}
+
+message GemvRequestPayload {
+  uint32 vector_length = 1;
+  bytes vector_data = 2;
+}
+
+message Conv2dRequestPayload {
+  uint32 tensor_h = 1;
+  uint32 tensor_w = 2;
+  uint32 channels_in = 3;
+  uint32 channels_out = 4;
+  uint32 kernel_size = 5;
+  uint32 padding = 6;
+  uint32 stride = 7;
+}
+
+message GemvResponsePayload {
+  uint32 output_length = 1;
+  bytes output_vector = 2;
+}
+
+message Conv2dResponsePayload {
+  uint32 output_length = 1;
+  bytes output_vector = 2;
+  string result_artifact_id = 3;
+}
+
+message GemvTaskPayload {
+  uint32 row_start = 1;
+  uint32 row_end = 2;
+  uint32 vector_length = 3;
+  bytes vector_data = 4;
+}
+
+message Conv2dTaskPayload {
+  uint32 start_oc = 1;
+  uint32 end_oc = 2;
+  uint32 tensor_h = 3;
+  uint32 tensor_w = 4;
+  uint32 channels_in = 5;
+  uint32 channels_out = 6;
+  uint32 kernel_size = 7;
+  uint32 padding = 8;
+  uint32 stride = 9;
+  bytes weight_data = 10;
+}
+
+message GemvResultPayload {
+  uint32 row_start = 1;
+  uint32 row_end = 2;
+  uint32 output_length = 3;
+  bytes output_vector = 4;
+}
+
+message Conv2dResultPayload {
+  uint32 start_oc = 1;
+  uint32 end_oc = 2;
+  uint32 output_h = 3;
+  uint32 output_w = 4;
+  uint32 output_length = 5;
+  bytes output_vector = 6;
+  string result_artifact_id = 7;
+}
+
+message RuntimeEnvelope {
+  MessageKind kind = 1;
+  RegisterWorker register_worker = 2;
+  RegisterOk register_ok = 3;
+  Heartbeat heartbeat = 4;
+  HeartbeatOk heartbeat_ok = 5;
+  ClientJoin client_join = 6;
+  ClientRequest client_request = 7;
+  ClientResponse client_response = 8;
+  TaskAssign task_assign = 9;
+  TaskAccept task_accept = 10;
+  TaskFail task_fail = 11;
+  TaskResult task_result = 12;
+  ArtifactRelease artifact_release = 13;
+  WorkerUpdate worker_update = 14;
+  ClientInfoRequest client_info_request = 15;
+  ClientInfoReply client_info_reply = 16;
+  ClientRequestOk client_request_ok = 17;
+}

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SuperWebClient.NativeBackendHarness</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\winui3\Services\NativeClientBackend.cs" Link="Services\NativeClientBackend.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None
+      Include="..\..\backend\build\Release\superweb_client_backend.dll"
+      Link="superweb_client_backend.dll"
+      CopyToOutputDirectory="PreserveNewest"
+      Condition="Exists('..\..\backend\build\Release\superweb_client_backend.dll')" />
+  </ItemGroup>
+</Project>

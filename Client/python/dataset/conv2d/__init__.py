@@ -1,0 +1,38 @@
+"""Client-local Conv2D weight-tensor helpers."""
+
+from .generator import (
+    generate_default_weight_bytes,
+    generate_default_weight_values,
+    generate_weight_bytes,
+    generate_weight_values,
+)
+from .spec import (
+    Conv2dSpec,
+    DEFAULT_WEIGHT_SEED,
+    LARGE_CIN,
+    LARGE_COUT,
+    LARGE_H,
+    LARGE_K,
+    LARGE_PAD,
+    LARGE_STRIDE,
+    LARGE_W,
+    MID_CIN,
+    MID_COUT,
+    MID_H,
+    MID_K,
+    MID_PAD,
+    MID_STRIDE,
+    MID_W,
+    SMALL_CIN,
+    SMALL_COUT,
+    SMALL_H,
+    SMALL_K,
+    SMALL_PAD,
+    SMALL_STRIDE,
+    SMALL_W,
+    build_conv2d_spec,
+    get_large_conv2d_spec,
+    get_mid_conv2d_spec,
+    get_small_conv2d_spec,
+    normalize_conv2d_size,
+)

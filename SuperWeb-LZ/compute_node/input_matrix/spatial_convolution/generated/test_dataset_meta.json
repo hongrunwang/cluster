@@ -1,0 +1,43 @@
+{
+  "benchmark": {
+    "name": "custom-conv2d",
+    "h": 256,
+    "w": 256,
+    "c_in": 32,
+    "c_out": 64,
+    "k": 3,
+    "pad": 1,
+    "stride": 1,
+    "dtype": "float32",
+    "endianness": "little",
+    "operation": "Conv2D"
+  },
+  "files": {
+    "input_feature_map": {
+      "path": "test_input.bin",
+      "bytes": 8388608,
+      "sha256": "d079c4de09ae3f2074517bc6e542b783014ac6273713d63be4e6339086ba02d8",
+      "seed": "0x123456789ABCDEF0",
+      "algorithm": "splitmix64_counter_to_float32_words_v1",
+      "shape": [
+        256,
+        256,
+        32
+      ]
+    },
+    "weights": {
+      "path": "test_weight.bin",
+      "bytes": 73728,
+      "sha256": "40bddb518cae86f244859adb92d468b7600b7d781c022f7de5d8dee468cb7594",
+      "seed": "0x0FEDCBA987654321",
+      "algorithm": "splitmix64_counter_to_float32_words_v1",
+      "skipped": false,
+      "shape": [
+        64,
+        3,
+        3,
+        32
+      ]
+    }
+  }
+}

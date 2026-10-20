@@ -1,0 +1,14 @@
+{
+  "run_id": "d4fb929a3f4941c880946ce816fbac02",
+  "event": "benchmark.finished",
+  "timestamp_unix": 1776386583.739483,
+  "timestamp_iso": "2026-04-17T00:43:03.739483+00:00",
+  "pid": 23828,
+  "status": "completed",
+  "output_path": "E:\\sist\\USC\\2026spring\\EE 451\\proj\\SuperWeb-LZ\\compute_node\\performance_metrics\\result.json",
+  "methods_completed": [
+    "fixed_matrix_vector_multiplication",
+    "spatial_convolution"
+  ],
+  "elapsed_seconds": 150.78676890001225
+}
